@@ -562,7 +562,7 @@ graph LR
    - **Pruebas**
      1. Despliegue automático en entorno de pruebas
      2. Ejecución de tests E2E
-     3. Validación de rendimiento
+     3. Validaci��n de rendimiento
 
    - **Producción**
      1. Aprobación manual requerida
@@ -608,42 +608,669 @@ graph LR
 
 ### **3.1. Diagrama del modelo de datos:**
 
-> Recomendamos usar mermaid para el modelo de datos, y utilizar todos los parámetros que permite la sintaxis para dar el máximo detalle, por ejemplo las claves primarias y foráneas.
+```mermaid
+erDiagram
+    User ||--o{ UserProfile : has
+    User ||--o{ Investment : makes
+    User ||--o{ Connection : has
+    
+    UserProfile ||--o{ Preference : contains
+    UserProfile {
+        uuid id PK
+        uuid user_id FK
+        string type "PSI/Investor"
+        string name
+        string email
+        string phone
+        datetime verified_at
+        datetime created_at
+        datetime updated_at
+    }
 
+    Property ||--o{ Investment : has
+    Property ||--o{ Document : contains
+    Property ||--o{ Analysis : has
+    Property {
+        uuid id PK
+        uuid psi_id FK
+        string title
+        string description
+        string address
+        float price
+        float square_meters
+        json features
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+
+    Investment ||--o{ Document : contains
+    Investment {
+        uuid id PK
+        uuid investor_id FK
+        uuid property_id FK
+        string status
+        float amount
+        datetime created_at
+        datetime updated_at
+    }
+
+    Analysis {
+        uuid id PK
+        uuid property_id FK
+        float roi
+        float monthly_income
+        float expenses
+        json financial_metrics
+        datetime created_at
+        datetime updated_at
+    }
+
+    Connection {
+        uuid id PK
+        uuid user_id_from FK
+        uuid user_id_to FK
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+
+    Message {
+        uuid id PK
+        uuid connection_id FK
+        uuid sender_id FK
+        text content
+        boolean read
+        datetime created_at
+    }
+
+    Document {
+        uuid id PK
+        uuid property_id FK
+        uuid investment_id FK
+        string type
+        string url
+        string name
+        datetime created_at
+        datetime updated_at
+    }
+
+    Preference {
+        uuid id PK
+        uuid profile_id FK
+        string type
+        json value
+        datetime created_at
+        datetime updated_at
+    }
+```
 
 ### **3.2. Descripción de entidades principales:**
 
-> Recuerda incluir el máximo detalle de cada entidad, como el nombre y tipo de cada atributo, descripción breve si procede, claves primarias y foráneas, relaciones y tipo de relación, restricciones (unique, not null…), etc.
+#### User y UserProfile
+- **User**: Entidad base para autenticación
+- **UserProfile**: Información detallada del usuario
+  - Tipos: PSI (Personal Shopper Inmobiliario) o Inversor
+  - Verificación requerida para PSIs
+  - Preferencias personalizables
+
+#### Property
+- Propiedades inmobiliarias
+- Gestionadas por PSIs
+- Incluye detalles básicos y características
+- Estados: borrador, publicada, reservada, vendida
+- Análisis financiero asociado
+
+#### Investment
+- Representa interés o inversión en una propiedad
+- Estados: interesado, en_proceso, completada, cancelada
+- Documentación asociada
+- Trazabilidad completa
+
+#### Connection
+- Relaciones entre PSIs e Inversores
+- Estados: pendiente, aceptada, rechazada
+- Base para el sistema de mensajería
+- Historial de interacciones
+
+#### Analysis
+- Análisis financiero de propiedades
+- Métricas de rentabilidad
+- Proyecciones financieras
+- Datos para toma de decisiones
+
+#### Document
+- Sistema de gestión documental
+- Tipos: contratos, informes, análisis
+- Almacenamiento seguro en S3
+- Control de versiones
+
+#### Preference
+- Preferencias de usuario
+- Configuración de notificaciones
+- Criterios de inversión
+- Personalización de experiencia
+
+### **3.3. Índices y Optimizaciones:**
+
+1. **Índices Principales**
+   - `user_profiles_user_id_idx`
+   - `properties_psi_id_status_idx`
+   - `investments_investor_id_status_idx`
+   - `connections_user_ids_idx`
+
+2. **Constraints**
+   - Claves foráneas con eliminación en cascada
+   - Restricciones unique en emails
+   - Checks en estados y tipos
+
+3. **Particionamiento**
+   - Mensajes por fecha
+   - Documentos por tipo
+   - Properties por estado
 
 ---
 
 ## 4. Especificación de la API
 
-> Si tu backend se comunica a través de API, describe los endpoints principales (máximo 3) en formato OpenAPI. Opcionalmente puedes añadir un ejemplo de petición y de respuesta para mayor claridad
+### 4.1. Especificación OpenAPI de endpoints principales
+
+```yaml
+openapi: 3.0.0
+info:
+  title: InvestHome Pro API
+  version: 1.0.0
+  description: API para la gestión de inversiones inmobiliarias
+
+paths:
+  /api/v1/properties:
+    post:
+      summary: Crear nueva oportunidad de inversión
+      tags:
+        - Properties
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - price
+                - location
+                - analysis
+              properties:
+                title:
+                  type: string
+                  example: "Apartamento en zona prime"
+                description:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                location:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    city:
+                      type: string
+                    coordinates:
+                      type: object
+                      properties:
+                        lat:
+                          type: number
+                        lng:
+                          type: number
+                analysis:
+                  type: object
+                  properties:
+                    roi:
+                      type: number
+                    monthlyIncome:
+                      type: number
+                    expenses:
+                      type: number
+      responses:
+        '201':
+          description: Propiedad creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autorizado
+
+  /api/v1/investments/{propertyId}:
+    post:
+      summary: Registrar interés en una propiedad
+      tags:
+        - Investments
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: propertyId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - message
+              properties:
+                type:
+                  type: string
+                  enum: [interest, offer]
+                message:
+                  type: string
+                amount:
+                  type: number
+      responses:
+        '201':
+          description: Interés registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Investment'
+        '404':
+          description: Propiedad no encontrada
+        '401':
+          description: No autorizado
+
+  /api/v1/connections/{userId}:
+    post:
+      summary: Establecer conexión con otro usuario
+      tags:
+        - Connections
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+      responses:
+        '201':
+          description: Solicitud de conexión enviada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
+        '400':
+          description: Usuario no válido
+        '401':
+          description: No autorizado
+
+components:
+  schemas:
+    Property:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        status:
+          type: string
+          enum: [draft, published, reserved, sold]
+        createdAt:
+          type: string
+          format: date-time
+
+    Investment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        propertyId:
+          type: string
+          format: uuid
+        investorId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [interested, in_process, completed, cancelled]
+        createdAt:
+          type: string
+          format: date-time
+
+    Connection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fromUserId:
+          type: string
+          format: uuid
+        toUserId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, accepted, rejected]
+        createdAt:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+```
+
+### 4.2. Ejemplos de Peticiones y Respuestas
+
+#### Crear Propiedad
+**Request:**
+```json
+POST /api/v1/properties
+{
+  "title": "Apartamento en zona prime",
+  "description": "Excelente oportunidad de inversión...",
+  "price": 250000,
+  "location": {
+    "address": "Calle Principal 123",
+    "city": "Barcelona",
+    "coordinates": {
+      "lat": 41.3851,
+      "lng": 2.1734
+    }
+  },
+  "analysis": {
+    "roi": 7.5,
+    "monthlyIncome": 1200,
+    "expenses": 200
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "title": "Apartamento en zona prime",
+  "status": "draft",
+  "createdAt": "2024-01-20T15:30:00Z",
+  "price": 250000,
+  "location": {
+    "address": "Calle Principal 123",
+    "city": "Barcelona",
+    "coordinates": {
+      "lat": 41.3851,
+      "lng": 2.1734
+    }
+  },
+  "analysis": {
+    "roi": 7.5,
+    "monthlyIncome": 1200,
+    "expenses": 200
+  }
+}
+```
 
 ---
 
 ## 5. Historias de Usuario
 
-> Documenta 3 de las historias de usuario principales utilizadas durante el desarrollo, teniendo en cuenta las buenas prácticas de producto al respecto.
+### Historia de Usuario 1: Publicación de Oportunidad de Inversión
 
-**Historia de Usuario 1**
+**Como** Personal Shopper Inmobiliario (PSI)  
+**Quiero** poder publicar una oportunidad de inversión inmobiliaria analizada  
+**Para** presentarla a mi red de inversores de forma profesional y estandarizada
 
-**Historia de Usuario 2**
+**Criterios de Aceptación:**
+1. **DADO** que soy un PSI verificado
+   **CUANDO** creo una nueva oportunidad de inversión
+   **ENTONCES** puedo introducir:
+   - Datos básicos de la propiedad
+   - Análisis financiero detallado (ROI, ingresos mensuales, gastos)
+   - Documentación relevante
+   - Imágenes y planos
 
-**Historia de Usuario 3**
+2. **DADO** que he completado el análisis
+   **CUANDO** publico la oportunidad
+   **ENTONCES** se notifica automáticamente a:
+   - Mi red de inversores
+   - Inversores con preferencias coincidentes
+
+3. **DADO** que la oportunidad está publicada
+   **CUANDO** un inversor la visualiza
+   **ENTONCES** puede ver:
+   - Análisis financiero completo
+   - Documentación verificada
+   - Mi perfil profesional como PSI
+
+**Notas Técnicas:**
+- Prioridad: ALTA
+- Story Points: 13
+- Dependencias: Sistema de usuarios, Sistema de notificaciones
+- Mock inicial: Sistema de documentación
+
+### Historia de Usuario 2: Conexión PSI-Inversor
+
+**Como** Inversor  
+**Quiero** poder conectar con PSIs verificados que publiquen oportunidades alineadas con mis criterios  
+**Para** acceder a oportunidades pre-analizadas y construir una red profesional de confianza
+
+**Criterios de Aceptación:**
+1. **DADO** que soy un inversor verificado
+   **CUANDO** encuentro un PSI interesante
+   **ENTONCES** puedo:
+   - Ver su perfil profesional completo
+   - Revisar su historial de operaciones
+   - Enviar solicitud de conexión
+
+2. **DADO** que he enviado una solicitud de conexión
+   **CUANDO** el PSI la acepta
+   **ENTONCES**:
+   - Se establece la conexión profesional
+   - Accedo a sus oportunidades publicadas
+   - Puedo iniciar chat profesional
+
+3. **DADO** que estoy conectado con un PSI
+   **CUANDO** publica nuevas oportunidades
+   **ENTONCES** recibo notificaciones personalizadas
+
+**Notas Técnicas:**
+- Prioridad: ALTA
+- Story Points: 8
+- Dependencias: Sistema de perfiles, Sistema de autenticación
+- Mock inicial: Sistema de reputación
+
+### Historia de Usuario 3: Gestión de Interés en Oportunidad
+
+**Como** Inversor  
+**Quiero** poder expresar y gestionar mi interés en una oportunidad de inversión  
+**Para** iniciar el proceso de inversión de manera estructurada
+
+**Criterios de Aceptación:**
+1. **DADO** que estoy viendo una oportunidad de inversión
+   **CUANDO** me interesa
+   **ENTONCES** puedo:
+   - Marcar mi interés
+   - Solicitar información adicional
+   - Programar una visita
+
+2. **DADO** que he expresado interés
+   **CUANDO** el PSI responde
+   **ENTONCES**:
+   - Se abre un chat dedicado
+   - Se comparte documentación adicional
+   - Se registra la interacción
+
+3. **DADO** que estoy en proceso de una oportunidad
+   **CUANDO** avanzo en las diferentes etapas
+   **ENTONCES** el sistema:
+   - Actualiza el estado
+   - Notifica a las partes
+   - Registra la trazabilidad
+
+**Notas Técnicas:**
+- Prioridad: ALTA
+- Story Points: 13
+- Dependencias: Sistema de chat, Sistema de oportunidades
+- Mock inicial: Sistema de documentación compartida
 
 ---
 
 ## 6. Tickets de Trabajo
 
-> Documenta 3 de los tickets de trabajo principales del desarrollo, uno de backend, uno de frontend, y uno de bases de datos. Da todo el detalle requerido para desarrollar la tarea de inicio a fin teniendo en cuenta las buenas prácticas al respecto. 
+### Ticket #1: Backend - Implementación del Servicio de Publicación de Oportunidades
 
-**Ticket 1**
+**Tipo:** Feature  
+**Componente:** Backend/PropertyService  
+**Prioridad:** Alta  
+**Estimación:** 8 puntos  
+**Referencias:** Historia de Usuario #1
 
-**Ticket 2**
+#### Descripción
+Implementar el servicio de dominio para la publicación de oportunidades de inversión, siguiendo la arquitectura hexagonal y principios DDD.
 
-**Ticket 3**
+#### Requisitos Técnicos
+- Implementar en TypeScript
+- Seguir arquitectura hexagonal (ver estructura en readme.md líneas 369-431)
+- Tests unitarios con Jest
+- Documentación OpenAPI
+
+#### Tareas
+1. **Implementar Entidad y Value Objects**
+   - Crear entidad Property con sus Value Objects correspondientes
+   - Implementar validaciones de dominio
+   - Definir eventos de dominio relacionados
+
+2. **Crear Puerto del Repositorio**
+   - Definir interfaz del repositorio
+   - Implementar métodos CRUD básicos
+   - Añadir métodos específicos del dominio
+
+3. **Implementar Caso de Uso**
+   - Crear caso de uso de creación de propiedad
+   - Implementar validaciones de negocio
+   - Gestionar eventos de dominio
+
+#### Criterios de Aceptación
+1. La propiedad se crea correctamente en la base de datos
+2. Se publican los eventos de dominio correspondientes
+3. Se validan todos los campos obligatorios
+4. Cobertura de tests > 90%
+
+### Ticket #2: Frontend - Implementación del Formulario de Publicación
+
+**Tipo:** Feature  
+**Componente:** Frontend/Web  
+**Prioridad:** Alta  
+**Estimación:** 5 puntos  
+**Referencias:** Historia de Usuario #1
+
+#### Descripción
+Implementar el formulario de publicación de oportunidades de inversión siguiendo el diseño establecido y las mejores prácticas de React.
+
+#### Requisitos Técnicos
+- React con TypeScript
+- Material-UI v5
+- React Hook Form
+- Tests con React Testing Library
+
+#### Tareas
+1. **Crear Componente de Formulario**
+   - Implementar formulario con campos requeridos
+   - Añadir validaciones en tiempo real
+   - Integrar con API backend
+   - Implementar manejo de errores
+
+2. **Implementar Validaciones**
+   - Validación de campos obligatorios
+   - Validación de formatos (números, fechas)
+   - Validaciones personalizadas de negocio
+   - Mensajes de error claros
+
+3. **Implementar Tests**
+   - Tests unitarios de componentes
+   - Tests de integración de formulario
+   - Tests de casos de error
+   - Tests de UX/UI
+
+#### Criterios de Aceptación
+1. Validación de campos en tiempo real
+2. Manejo de errores de API
+3. UI responsive
+4. Tests de integración completos
+
+### Ticket #3: Base de Datos - Implementación del Esquema de Propiedades
+
+**Tipo:** Feature  
+**Componente:** Infrastructure/Database  
+**Prioridad:** Alta  
+**Estimación:** 3 puntos  
+**Referencias:** Historia de Usuario #1
+
+#### Descripción
+Crear el esquema de base de datos para el módulo de propiedades usando Prisma ORM.
+
+#### Requisitos Técnicos
+- PostgreSQL
+- Prisma ORM
+- Migraciones automatizadas
+- Índices optimizados
+
+#### Tareas
+1. **Definir Esquema Prisma**
+   - Crear modelo de Property
+   - Definir relaciones con otras entidades
+   - Configurar campos y tipos
+   - Añadir índices necesarios
+
+2. **Crear Migración**
+   - Generar script de migración
+   - Validar cambios en base de datos
+   - Preparar script de rollback
+   - Documentar proceso de migración
+
+3. **Implementar Índices y Constraints**
+   - Crear índices para búsquedas frecuentes
+   - Implementar constraints de integridad
+   - Optimizar consultas comunes
+   - Documentar decisiones de diseño
+
+#### Criterios de Aceptación
+1. Migraciones ejecutadas correctamente
+2. Índices creados y optimizados
+3. Constraints de integridad implementados
+4. Scripts de rollback probados
 
 ---
 
