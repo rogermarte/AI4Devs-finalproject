@@ -1280,6 +1280,38 @@ Crear el esquema de base de datos para el módulo de propiedades usando Prisma O
 
 **Pull Request 1**
 
+https://github.com/rogermarte/AI4Devs-finalproject/pull/1
+
+# PR: Implementación Esquema Base de Datos
+
+## 🎯 Resumen
+Implementación del esquema de base de datos usando Prisma ORM, incluyendo modelos principales (User, Property, Investment), migraciones y datos de prueba.
+
+## 📝 Cambios Principales
+
+- Esquema Prisma con todas las entidades y relaciones
+- Scripts de migración y seeds
+- Índices optimizados para consultas frecuentes
+- Cliente Prisma configurado
+- Scripts de utilidad para gestión de BD
+
+## ✅ Checklist
+
+- [ ] Prisma ORM configurado
+- [ ] Esquema Prisma con todas las entidades y relaciones
+- [ ] Scripts de migración y seeds
+- [ ] Índices optimizados para consultas frecuentes
+- [ ] Cliente Prisma configurado
+- [ ] Scripts de utilidad para gestión de BD
+
+## 🧪 Testing
+```bash
+npm run db:migrate
+npm run db:seed
+npm run verify:seed
+```
+
+
 **Pull Request 2**
 
 **Pull Request 3**
