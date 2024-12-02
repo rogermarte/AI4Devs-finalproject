@@ -2,8 +2,14 @@ import { render, screen } from '@testing-library/react'
 import { Input } from '../index'
 import { ComponentType } from 'react'
 
+interface MockTextFieldProps {
+  label?: string
+  helperText?: string
+  id?: string
+}
+
 jest.mock('@mui/material', () => ({
-  TextField: ({ label, error, helperText, id = 'test-input' }: any) => (
+  TextField: ({ label, helperText, id = 'test-input' }: MockTextFieldProps) => (
     <div>
       <label htmlFor={id}>{label}</label>
       <input id={id} aria-label={label} />
