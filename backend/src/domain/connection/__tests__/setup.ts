@@ -6,4 +6,6 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks()
-}) 
+})
+
+export {} 
