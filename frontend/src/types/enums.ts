@@ -15,4 +15,11 @@ export enum InvestmentStatus {
   IN_PROCESS = 'IN_PROCESS',
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED'
+}
+
+export const statusLabels = {
+  [InvestmentStatus.INTERESTED]: 'Interesado',
+  [InvestmentStatus.IN_PROCESS]: 'En Proceso',
+  [InvestmentStatus.COMPLETED]: 'Completada',
+  [InvestmentStatus.CANCELLED]: 'Cancelada'
 } 

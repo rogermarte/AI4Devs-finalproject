@@ -1,14 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { InvestmentsList } from '../InvestmentsList'
-import { InvestmentStatus } from '@/types/enums'
-
-const statusLabels = {
-  [InvestmentStatus.INTERESTED]: 'Pendiente',
-  [InvestmentStatus.APPROVED]: 'Aprobado',
-  [InvestmentStatus.REJECTED]: 'Rechazado',
-  [InvestmentStatus.CANCELLED]: 'Cancelado',
-  [InvestmentStatus.COMPLETED]: 'Completado'
-}
+import { InvestmentStatus, statusLabels } from '@/types/enums'
 
 const mockInvestments = [
   {
@@ -48,7 +40,7 @@ describe('InvestmentsList', () => {
     await waitFor(() => {
       expect(screen.getByText('Test Property')).toBeInTheDocument()
       expect(screen.getByText('€350.000')).toBeInTheDocument()
-      expect(screen.getByText('Estado: Interesado')).toBeInTheDocument()
+      expect(screen.getByText(`Estado: ${statusLabels[InvestmentStatus.INTERESTED]}`)).toBeInTheDocument()
     })
   })
 }) 

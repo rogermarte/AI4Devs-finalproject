@@ -562,7 +562,7 @@ graph LR
    - **Pruebas**
      1. Despliegue automático en entorno de pruebas
      2. Ejecución de tests E2E
-     3. Validaci��n de rendimiento
+     3. Validación de rendimiento
 
    - **Producción**
      1. Aprobación manual requerida
@@ -1046,110 +1046,73 @@ POST /api/v1/properties
 
 ## 5. Historias de Usuario
 
-### Historia de Usuario 1: Publicación de Oportunidad de Inversión
+### Historia de Usuario #1: Listado de Inversiones
 
-**Como** Personal Shopper Inmobiliario (PSI)  
-**Quiero** poder publicar una oportunidad de inversión inmobiliaria analizada  
-**Para** presentarla a mi red de inversores de forma profesional y estandarizada
+**Como** Inversor
+**Quiero** poder ver el listado de mis inversiones
+**Para** hacer seguimiento de mi portafolio
 
-**Criterios de Aceptación:**
-1. **DADO** que soy un PSI verificado
-   **CUANDO** creo una nueva oportunidad de inversión
-   **ENTONCES** puedo introducir:
-   - Datos básicos de la propiedad
-   - Análisis financiero detallado (ROI, ingresos mensuales, gastos)
-   - Documentación relevante
-   - Imágenes y planos
+#### Criterios de Aceptación
+1. Puedo ver un listado de mis inversiones con:
+   - Título de la propiedad
+   - Monto invertido formateado (€)
+   - Estado actual con código de colores
+   - Fecha de creación en formato local
+   - Nombre del PSI asignado
 
-2. **DADO** que he completado el análisis
-   **CUANDO** publico la oportunidad
-   **ENTONCES** se notifica automáticamente a:
-   - Mi red de inversores
-   - Inversores con preferencias coincidentes
+2. Los estados posibles son:
+   - INTERESTED (amarillo)
+   - IN_PROCESS (verde)
+   - COMPLETED (verde)
+   - CANCELLED (rojo)
 
-3. **DADO** que la oportunidad está publicada
-   **CUANDO** un inversor la visualiza
-   **ENTONCES** puede ver:
-   - Análisis financiero completo
-   - Documentación verificada
-   - Mi perfil profesional como PSI
+#### Implementación Técnica
+- Componente InvestmentCard para mostrar cada inversión
+- Tests con React Testing Library
+- Entidad Investment con reglas de dominio
+- Cobertura de tests > 90%
 
-**Notas Técnicas:**
-- Prioridad: ALTA
-- Story Points: 13
-- Dependencias: Sistema de usuarios, Sistema de notificaciones
-- Mock inicial: Sistema de documentación
+### Historia de Usuario #2: Listado de Propiedades
 
-### Historia de Usuario 2: Conexión PSI-Inversor
+**Como** Inversor
+**Quiero** explorar las propiedades disponibles
+**Para** encontrar oportunidades de inversión que se ajusten a mis criterios
 
-**Como** Inversor  
-**Quiero** poder conectar con PSIs verificados que publiquen oportunidades alineadas con mis criterios  
-**Para** acceder a oportunidades pre-analizadas y construir una red profesional de confianza
+#### Criterios de Aceptación
+1. Visualización de propiedades con:
+   - Título descriptivo
+   - Precio formateado en euros
+   - Metros cuadrados
+   - Información del PSI
+   - Estado de la propiedad
+   - Botón de inversión cuando corresponda
 
-**Criterios de Aceptación:**
-1. **DADO** que soy un inversor verificado
-   **CUANDO** encuentro un PSI interesante
-   **ENTONCES** puedo:
-   - Ver su perfil profesional completo
-   - Revisar su historial de operaciones
-   - Enviar solicitud de conexión
+2. Estados posibles:
+   - PUBLISHED (verde)
+   - RESERVED (amarillo)
+   - SOLD (rojo)
+   - DRAFT (gris)
 
-2. **DADO** que he enviado una solicitud de conexión
-   **CUANDO** el PSI la acepta
-   **ENTONCES**:
-   - Se establece la conexión profesional
-   - Accedo a sus oportunidades publicadas
-   - Puedo iniciar chat profesional
+### Historia de Usuario #3: Crear Inversión
 
-3. **DADO** que estoy conectado con un PSI
-   **CUANDO** publica nuevas oportunidades
-   **ENTONCES** recibo notificaciones personalizadas
+**Como** Inversor
+**Quiero** poder iniciar una inversión en una propiedad
+**Para** manifestar mi interés y comenzar el proceso
 
-**Notas Técnicas:**
-- Prioridad: ALTA
-- Story Points: 8
-- Dependencias: Sistema de perfiles, Sistema de autenticación
-- Mock inicial: Sistema de reputación
+#### Criterios de Aceptación
+1. Formulario de inversión con:
+   - Monto a invertir
+   - Notas o comentarios
+   - Confirmación de términos
 
-### Historia de Usuario 3: Gestión de Interés en Oportunidad
-
-**Como** Inversor  
-**Quiero** poder expresar y gestionar mi interés en una oportunidad de inversión  
-**Para** iniciar el proceso de inversión de manera estructurada
-
-**Criterios de Aceptación:**
-1. **DADO** que estoy viendo una oportunidad de inversión
-   **CUANDO** me interesa
-   **ENTONCES** puedo:
-   - Marcar mi interés
-   - Solicitar información adicional
-   - Programar una visita
-
-2. **DADO** que he expresado interés
-   **CUANDO** el PSI responde
-   **ENTONCES**:
-   - Se abre un chat dedicado
-   - Se comparte documentación adicional
-   - Se registra la interacción
-
-3. **DADO** que estoy en proceso de una oportunidad
-   **CUANDO** avanzo en las diferentes etapas
-   **ENTONCES** el sistema:
-   - Actualiza el estado
-   - Notifica a las partes
-   - Registra la trazabilidad
-
-**Notas Técnicas:**
-- Prioridad: ALTA
-- Story Points: 13
-- Dependencias: Sistema de chat, Sistema de oportunidades
-- Mock inicial: Sistema de documentación compartida
-
----
+2. Validaciones:
+   - Monto mínimo requerido
+   - Propiedad disponible
+   - Usuario verificado
 
 ## 6. Tickets de Trabajo
 
-### Ticket #1: Backend - Implementación del Servicio de Publicación de Oportunidades
+### Ticket #1: Backend - Implementación del Caso de Uso de Inversión
 
 **Tipo:** Feature  
 **Componente:** Backend/PropertyService  
@@ -1188,89 +1151,68 @@ Implementar el servicio de dominio para la publicación de oportunidades de inve
 3. Se validan todos los campos obligatorios
 4. Cobertura de tests > 90%
 
-### Ticket #2: Frontend - Implementación del Formulario de Publicación
+### Ticket #2: Frontend - Implementación del Listado de Propiedades
+
+**Tipo:** Feature  
+**Componente:** Frontend/Web  
+**Prioridad:** Alta  
+**Estimación:** 3 puntos  
+
+#### Descripción
+Implementar el listado de propiedades disponibles con filtros y ordenación.
+
+#### Requisitos Técnicos
+- React con TypeScript
+- React Query para fetching
+- Tests con React Testing Library
+
+#### Tareas
+1. **Crear Componentes**
+   - PropertyList container
+   - PropertyCard presentacional
+   - PropertyFilters para búsqueda
+
+2. **Implementar Fetching**
+   - Setup de React Query
+   - Manejo de estados de carga
+   - Gestión de errores
+   - Paginación infinita
+
+3. **Implementar Tests**
+   - Tests unitarios
+   - Tests de integración
+   - Tests de casos de error
+
+### Ticket #3: Frontend - Implementación del Formulario de Inversión
 
 **Tipo:** Feature  
 **Componente:** Frontend/Web  
 **Prioridad:** Alta  
 **Estimación:** 5 puntos  
-**Referencias:** Historia de Usuario #1
 
 #### Descripción
-Implementar el formulario de publicación de oportunidades de inversión siguiendo el diseño establecido y las mejores prácticas de React.
+Implementar el formulario modal para crear una nueva inversión.
 
 #### Requisitos Técnicos
-- React con TypeScript
-- Material-UI v5
 - React Hook Form
-- Tests con React Testing Library
+- Zod para validaciones
+- Tests E2E con Cypress
 
 #### Tareas
-1. **Crear Componente de Formulario**
-   - Implementar formulario con campos requeridos
-   - Añadir validaciones en tiempo real
-   - Integrar con API backend
-   - Implementar manejo de errores
+1. **Crear Componentes**
+   - Modal de inversión
+   - Formulario con validaciones
+   - Confirmación de éxito
 
 2. **Implementar Validaciones**
-   - Validación de campos obligatorios
-   - Validación de formatos (números, fechas)
-   - Validaciones personalizadas de negocio
+   - Schema de validación con Zod
+   - Validaciones en tiempo real
    - Mensajes de error claros
 
-3. **Implementar Tests**
-   - Tests unitarios de componentes
-   - Tests de integración de formulario
-   - Tests de casos de error
-   - Tests de UX/UI
-
-#### Criterios de Aceptación
-1. Validación de campos en tiempo real
-2. Manejo de errores de API
-3. UI responsive
-4. Tests de integración completos
-
-### Ticket #3: Base de Datos - Implementación del Esquema de Propiedades
-
-**Tipo:** Feature  
-**Componente:** Infrastructure/Database  
-**Prioridad:** Alta  
-**Estimación:** 3 puntos  
-**Referencias:** Historia de Usuario #1
-
-#### Descripción
-Crear el esquema de base de datos para el módulo de propiedades usando Prisma ORM.
-
-#### Requisitos Técnicos
-- PostgreSQL
-- Prisma ORM
-- Migraciones automatizadas
-- Índices optimizados
-
-#### Tareas
-1. **Definir Esquema Prisma**
-   - Crear modelo de Property
-   - Definir relaciones con otras entidades
-   - Configurar campos y tipos
-   - Añadir índices necesarios
-
-2. **Crear Migración**
-   - Generar script de migración
-   - Validar cambios en base de datos
-   - Preparar script de rollback
-   - Documentar proceso de migración
-
-3. **Implementar Índices y Constraints**
-   - Crear índices para búsquedas frecuentes
-   - Implementar constraints de integridad
-   - Optimizar consultas comunes
-   - Documentar decisiones de diseño
-
-#### Criterios de Aceptación
-1. Migraciones ejecutadas correctamente
-2. Índices creados y optimizados
-3. Constraints de integridad implementados
-4. Scripts de rollback probados
+3. **Tests E2E**
+   - Flujo completo de inversión
+   - Casos de error
+   - Validaciones de campos
 
 ---
 
