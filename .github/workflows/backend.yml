@@ -11,25 +11,24 @@ on:
       - 'backend/**'
 
 jobs:
-  build-and-deploy:
+  test:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: '18'
-
+        node-version: '20.x'
+        
     - name: Install dependencies
+      working-directory: ./backend
       run: npm ci
-      working-directory: ./backend
-
+      
     - name: Run tests
-      run: npm test
       working-directory: ./backend
+      run: npm test
 
     - name: Build Docker image
       run: docker build -t ${{ secrets.ECR_REGISTRY }}/investhome-backend:latest ./backend
