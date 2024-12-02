@@ -133,7 +133,11 @@ resource "aws_ecs_task_definition" "frontend" {
       environment = [
         {
           name  = "NEXT_PUBLIC_API_URL"
-          value = "http://${aws_lb.main.dns_name}"
+          value = "http://${aws_lb.main.dns_name}:4000"
+        },
+        {
+          name  = "NODE_ENV"
+          value = "production"
         }
       ]
       portMappings = [
