@@ -23,7 +23,7 @@ describe('PropertyCard', () => {
   it('renderiza la información de la propiedad', () => {
     render(<PropertyCard property={mockProperty} onInvestmentComplete={() => {}} />)
     expect(screen.getByText('Test Property')).toBeInTheDocument()
-    expect(screen.getByText('€350,000')).toBeInTheDocument()
+    expect(screen.getByText('€350.000')).toBeInTheDocument()
     expect(screen.getByText('100m²')).toBeInTheDocument()
   })
 

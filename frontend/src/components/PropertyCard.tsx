@@ -29,7 +29,11 @@ export function PropertyCard({ property, onInvestmentComplete }: PropertyCardPro
         <h2 className="text-xl font-semibold mb-2">{property.title}</h2>
         <div className="space-y-2">
           <p className="text-2xl font-bold text-blue-600">
-            €{property.price.toLocaleString()}
+            €{property.price.toLocaleString('es-ES', {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+              useGrouping: true
+            })}
           </p>
           <p className="text-gray-600">{property.squareMeters}m²</p>
           <div className="text-sm text-gray-500">
