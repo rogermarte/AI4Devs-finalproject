@@ -1,0 +1,49 @@
+name: Backend CI/CD
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./backend
+
+    - name: Run tests
+      run: npm test
+      working-directory: ./backend
+
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.ECR_REGISTRY }}/investhome-backend:latest ./backend
+
+    - name: Log in to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Push to ECR
+      run: docker push ${{ secrets.ECR_REGISTRY }}/investhome-backend:latest
+
+    - name: Deploy to ECS
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ./infrastructure/backend-task-definition.json
+        service: backend
+        cluster: investhome-cluster
+        wait-for-service-stability: true
