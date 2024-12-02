@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM --platform=linux/amd64 node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -10,10 +10,10 @@ COPY package*.json ./
 COPY tsconfig.json ./
 COPY prisma ./prisma/
 
-# Instalar dependencias usando install en lugar de ci
+# Instalar dependencias
 RUN npm install
 
-# Copiar código fuente
+# Copiar código fuente y scripts
 COPY . .
 
 # Generar Prisma Client y construir
@@ -21,7 +21,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Imagen final
-FROM node:18-alpine
+FROM --platform=linux/amd64 node:18-alpine
 
 WORKDIR /app
 
