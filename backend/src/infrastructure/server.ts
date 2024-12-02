@@ -1,29 +1,14 @@
 import express from 'express'
 import cors from 'cors'
-import routes from './routes/index'
+import routes from './routes'
 
 const app = express()
 const port = process.env.PORT || 4000
 
-const allowedOrigins = [
-  process.env.CORS_ORIGIN || 'http://localhost:3000',
-  'http://localhost:3000'
-]
-
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  credentials: true
-}))
-
+app.use(cors())
 app.use(express.json())
 
-// Health check
+// Health check endpoint
 app.get('/health', (_, res) => res.json({ status: 'ok' }))
 
 // API routes
