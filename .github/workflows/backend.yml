@@ -26,9 +26,16 @@ jobs:
       working-directory: ./backend
       run: npm ci
       
-    - name: Run testss
+    - name: Run tests
       working-directory: ./backend
       run: npm test
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
 
     - name: Build Docker image
       run: docker build -t ${{ secrets.ECR_REGISTRY }}/investhome-backend:latest ./backend
