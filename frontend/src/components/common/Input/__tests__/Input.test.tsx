@@ -6,11 +6,13 @@ interface MockTextFieldProps {
   label?: string
   helperText?: string
   id?: string
+  sx?: Record<string, unknown>
+  error?: boolean
 }
 
 jest.mock('@mui/material', () => ({
-  TextField: ({ label, helperText, id = 'test-input' }: MockTextFieldProps) => (
-    <div>
+  TextField: ({ label, helperText, id = 'test-input', sx, error }: MockTextFieldProps) => (
+    <div data-testid="text-field" data-sx={JSON.stringify(sx)} data-error={error}>
       <label htmlFor={id}>{label}</label>
       <input id={id} aria-label={label} />
       {helperText && <span>{helperText}</span>}

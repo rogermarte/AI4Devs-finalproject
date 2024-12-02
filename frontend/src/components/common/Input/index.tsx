@@ -15,26 +15,26 @@ export const Input = ({ error, helperText, ...props }: CustomInputProps) => {
       {...props}
       sx={{
         '& .MuiOutlinedInput-root': {
-          backgroundColor: 'white',
+          backgroundColor: 'background.paper',
           borderRadius: '8px',
           '& fieldset': {
-            borderColor: 'rgba(0, 0, 0, 0.23)',
+            borderColor: 'rgba(255, 255, 255, 0.23)',
           },
           '&:hover fieldset': {
-            borderColor: '#000',
+            borderColor: 'primary.main',
           },
           '&.Mui-focused fieldset': {
-            borderColor: '#000',
+            borderColor: 'primary.main',
           }
         },
         '& .MuiInputLabel-root': {
-          color: 'rgba(0, 0, 0, 0.6)',
+          color: 'text.secondary',
           '&.Mui-focused': {
-            color: '#000',
+            color: 'primary.main',
           }
         },
         '& .MuiInputBase-input': {
-          color: '#000',
+          color: 'text.primary',
         }
       }}
     />
