@@ -31,7 +31,7 @@ export default function Home() {
   if (error) return <div className="p-8 text-red-500">Error: {error}</div>
 
   return (
-    <main className="p-8 bg-gray-50 min-h-screen">
+    <main className="p-8 bg-[#121212] min-h-screen">
       <h1 className="text-3xl font-bold mb-8 text-gray-800">PSI Platform</h1>
       {properties.length === 0 ? (
         <p>No hay propiedades disponibles</p>

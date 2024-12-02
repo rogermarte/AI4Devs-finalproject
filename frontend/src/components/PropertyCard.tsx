@@ -25,25 +25,25 @@ export function PropertyCard({ property, onInvestmentComplete }: PropertyCardPro
 
   return (
     <>
-      <div className="border rounded-lg p-4 shadow hover:shadow-md transition-shadow">
-        <h2 className="text-xl font-semibold mb-2">{property.title}</h2>
+      <div className="border border-gray-700 rounded-lg p-4 shadow bg-[#1E1E1E] hover:shadow-md transition-shadow">
+        <h2 className="text-xl font-semibold mb-2 text-white">{property.title}</h2>
         <div className="space-y-2">
-          <p className="text-2xl font-bold text-blue-600">
+          <p className="text-2xl font-bold text-blue-400">
             €{property.price.toLocaleString('es-ES', {
               minimumFractionDigits: 0,
               maximumFractionDigits: 0,
               useGrouping: true
             })}
           </p>
-          <p className="text-gray-600">{property.squareMeters}m²</p>
-          <div className="text-sm text-gray-500">
+          <p className="text-gray-400">{property.squareMeters}m²</p>
+          <div className="text-sm text-gray-300">
             <p>PSI: {property.psi.profile.name}</p>
             <p className={statusColors[property.status]}>
               Estado: {property.status}
             </p>
           </div>
           <button 
-            className="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+            className="w-full mt-4 bg-[#2B4C7E] text-white px-4 py-2 rounded hover:bg-[#3B5998] transition-colors"
             onClick={() => setShowInvestModal(true)}
           >
             Invertir
