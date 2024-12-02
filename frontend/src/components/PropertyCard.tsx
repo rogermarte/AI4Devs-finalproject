@@ -12,10 +12,10 @@ export function PropertyCard({ property, onInvestmentComplete }: PropertyCardPro
   const [showInvestModal, setShowInvestModal] = useState(false)
 
   const statusColors = {
-    [PropertyStatus.PUBLISHED]: 'text-green-600',
-    [PropertyStatus.RESERVED]: 'text-yellow-600',
-    [PropertyStatus.SOLD]: 'text-red-600',
-    [PropertyStatus.DRAFT]: 'text-gray-600'
+    [PropertyStatus.PUBLISHED]: 'text-[#1EA896]',
+    [PropertyStatus.RESERVED]: 'text-yellow-400',
+    [PropertyStatus.SOLD]: 'text-[#FF6B6B]',
+    [PropertyStatus.DRAFT]: 'text-gray-400'
   }
 
   const handleInvestmentSuccess = () => {

@@ -32,7 +32,7 @@ export default function Home() {
 
   return (
     <main className="p-8 bg-[#121212] min-h-screen">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">PSI Platform</h1>
+      <h1 className="text-3xl font-bold mb-8 text-white">InvestHome Pro</h1>
       {properties.length === 0 ? (
         <p>No hay propiedades disponibles</p>
       ) : (
