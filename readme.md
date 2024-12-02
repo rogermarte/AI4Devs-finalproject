@@ -23,11 +23,11 @@ Una plataforma que conecta Personal Shoppers Inmobiliarios con inversores, facil
 
 ### **0.4. URL del proyecto:**
 
-TBD
+[http://investhome-alb-1088488104.eu-west-1.elb.amazonaws.com:3000/](http://investhome-alb-1088488104.eu-west-1.elb.amazonaws.com:3000/)
 
 ### 0.5. URL o archivo comprimido del repositorio
 
-TDD
+[Repositorio en GitHub](https://github.com/rogermarte/AI4Devs-finalproject)
 
 ---
 
