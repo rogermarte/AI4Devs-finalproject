@@ -8,4 +8,5 @@ export interface Investment {
   status: InvestmentStatus
   property: Property
   investor: User
+  createdAt: string
 } 
