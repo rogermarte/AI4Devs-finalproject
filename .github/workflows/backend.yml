@@ -10,6 +10,11 @@ on:
     paths:
       - 'backend/**'
 
+env:
+  ECR_BASE_PATH: ${{ secrets.ECR_REGISTRY }}
+  LOCAL_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  LOCAL_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -40,7 +45,8 @@ jobs:
     - name: Build Docker image
       run: docker build -t ${{ secrets.ECR_REGISTRY }}/investhome-backend:latest ./backend
 
-    - name: Log in to Amazon ECR
+    - name: Login to Amazon ECR
+      id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Push to ECR
