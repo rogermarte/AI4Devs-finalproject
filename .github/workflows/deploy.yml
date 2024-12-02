@@ -21,6 +21,11 @@ concurrency:
     group: "deploy"
     cancel-in-progress: false
     
+env:
+  TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
+  TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+  TF_VAR_aws_region: eu-west-1
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
