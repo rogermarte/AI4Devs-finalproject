@@ -94,4 +94,38 @@ router.get('/investors', async (_req, res) => {
   }
 })
 
+router.get('/investments', mockAuthMiddleware, async (req, res) => {
+  try {
+    const investments = await prismaClient.investment.findMany({
+      where: {
+        investorId: req.user.id
+      },
+      include: {
+        property: {
+          include: {
+            psi: {
+              include: {
+                profile: true
+              }
+            }
+          }
+        },
+        investor: {
+          include: {
+            profile: true
+          }
+        }
+      }
+    })
+    
+    res.json(investments)
+  } catch (error) {
+    console.error('Error fetching investments:', error)
+    res.status(500).json({ 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+})
+
 export default router
