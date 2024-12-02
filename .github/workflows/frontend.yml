@@ -43,7 +43,7 @@ jobs:
         aws-region: eu-west-1
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.ECR_REGISTRY }}/investhome-frontend:latest ./frontend
+      run: docker build -t ${{ secrets.ECR_REGISTRY }}/investhome-frontend:latest ./frontend --build-arg NEXT_PUBLIC_API_URL=http://investhome-alb-1088488104.eu-west-1.elb.amazonaws.com:4000
 
     - name: Login to Amazon ECR
       id: login-ecr
