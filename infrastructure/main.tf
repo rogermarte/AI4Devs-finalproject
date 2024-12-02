@@ -175,7 +175,7 @@ resource "aws_ecs_task_definition" "backend" {
           value = "postgresql://${var.db_username}:${var.db_password}@${aws_db_instance.main.endpoint}/investhome"        },
         {
           name  = "CORS_ORIGIN"
-          value = "http://${aws_lb.main.dns_name}:3000"
+          value = "http://${aws_lb.main.dns_name}"
         }
       ]
       portMappings = [
