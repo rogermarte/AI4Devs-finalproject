@@ -370,7 +370,7 @@ resource "aws_lb_target_group" "backend" {
 # Listener para el backend
 resource "aws_lb_listener" "backend" {
   load_balancer_arn = aws_lb.main.arn
-  port              = "80"
+  port              = "4000"
   protocol          = "HTTP"
 
   default_action {
