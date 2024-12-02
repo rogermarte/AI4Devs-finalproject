@@ -7,6 +7,14 @@ on:
       - completed
     branches:
       - main
+  push:
+    paths:
+      - 'infrastructure/**'
+    branches:
+          - main
+  pull_request:
+    paths:
+      - 'infrastructure/**'
 
 jobs:
   deploy:
@@ -29,6 +37,14 @@ jobs:
     - name: Terraform Init
       run: terraform init
       working-directory: ./infrastructure
+
+    - name: Force new deployment of Backend
+      if: ${{ github.event.workflow_run.name == 'Backend CI/CD' }}
+      run: aws ecs update-service --cluster investhome-cluster --service backend --force-new-deployment
+
+    - name: Force new deployment of Frontend
+      if: ${{ github.event.workflow_run.name == 'Frontend CI/CD' }}
+      run: aws ecs update-service --cluster investhome-cluster --service frontend --force-new-deployment
 
     - name: Terraform Apply
       run: terraform apply -auto-approve
