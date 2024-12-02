@@ -16,6 +16,11 @@ on:
     paths:
       - 'infrastructure/**'
 
+# Asegura que solo se ejecute una instancia a la vez
+concurrency: 
+    group: "deploy"
+    cancel-in-progress: false
+    
 jobs:
   deploy:
     runs-on: ubuntu-latest
