@@ -3,14 +3,15 @@ import { config } from '@/config'
 
 interface InvestmentFormProps {
   propertyId: string
+  propertyPrice: number
   onSuccess: () => void
   onCancel: () => void
 }
 
-export function InvestmentForm({ propertyId, onSuccess, onCancel }: InvestmentFormProps) {
-  const [amount, setAmount] = useState<number>(0)
+export function InvestmentForm({ propertyId, propertyPrice, onSuccess, onCancel }: InvestmentFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showConfirmation, setShowConfirmation] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,34 +26,47 @@ export function InvestmentForm({ propertyId, onSuccess, onCancel }: InvestmentFo
         },
         body: JSON.stringify({
           propertyId,
-          amount
+          amount: propertyPrice
         })
       })
 
       if (!response.ok) throw new Error('Error al crear la inversión')
       
-      onSuccess()
+      setShowConfirmation(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido')
-    } finally {
       setLoading(false)
     }
   }
 
+  if (showConfirmation) {
+    return (
+      <div className="space-y-4 text-white">
+        <h3 className="text-xl font-semibold mb-4">¡Solicitud Recibida!</h3>
+        <p>Tu solicitud de inversión está pendiente de aprobación.</p>
+        <p>Próximos pasos:</p>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Recibirás un email con las instrucciones para enviar la documentación necesaria</li>
+          <li>Nuestro equipo revisará tu solicitud en las próximas 24-48 horas</li>
+          <li>Te contactaremos para coordinar los siguientes pasos</li>
+        </ul>
+        <button
+          onClick={onSuccess}
+          className="w-full mt-6 bg-[#2B4C7E] text-white px-4 py-2 rounded hover:bg-[#3B5998] transition-colors"
+        >
+          Entendido
+        </button>
+      </div>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Monto de inversión (€)
-        </label>
-        <input
-          type="number"
-          min="0"
-          value={amount}
-          onChange={(e) => setAmount(Number(e.target.value))}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          required
-        />
+      <div className="bg-[#1E1E1E] p-4 rounded-lg border border-gray-700">
+        <p className="text-gray-300 text-sm mb-2">Monto de inversión</p>
+        <p className="text-2xl font-bold text-white">
+          €{propertyPrice.toLocaleString('es-ES')}
+        </p>
       </div>
 
       {error && (
@@ -63,17 +77,17 @@ export function InvestmentForm({ propertyId, onSuccess, onCancel }: InvestmentFo
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+          className="px-4 py-2 text-sm font-medium text-gray-300 bg-[#1E1E1E] border border-gray-700 rounded hover:bg-gray-800 transition-colors"
           disabled={loading}
         >
           Cancelar
         </button>
         <button
           type="submit"
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          className="px-4 py-2 text-sm font-medium text-white bg-[#2B4C7E] rounded hover:bg-[#3B5998] transition-colors"
           disabled={loading}
         >
-          {loading ? 'Enviando...' : 'Invertir'}
+          {loading ? 'Enviando...' : 'Confirmar Inversión'}
         </button>
       </div>
     </form>

@@ -58,6 +58,7 @@ export function PropertyCard({ property, onInvestmentComplete }: PropertyCardPro
       >
         <InvestmentForm
           propertyId={property.id}
+          propertyPrice={property.price}
           onSuccess={handleInvestmentSuccess}
           onCancel={() => setShowInvestModal(false)}
         />
