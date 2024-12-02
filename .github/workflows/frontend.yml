@@ -10,6 +10,10 @@ on:
     paths:
       - 'frontend/**'
 
+env:
+  ECR_BASE_PATH: ${{ secrets.ECR_REGISTRY }}
+  LOCAL_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  LOCAL_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -39,11 +43,3 @@ jobs:
 
     - name: Push to ECR
       run: docker push ${{ secrets.ECR_REGISTRY }}/investhome-frontend:latest
-
-    - name: Deploy to ECS
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ./infrastructure/frontend-task-definition.json
-        service: frontend
-        cluster: investhome-cluster
-        wait-for-service-stability: true

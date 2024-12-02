@@ -51,11 +51,3 @@ jobs:
 
     - name: Push to ECR
       run: docker push ${{ secrets.ECR_REGISTRY }}/investhome-backend:latest
-
-    - name: Deploy to ECS
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ./infrastructure/backend-task-definition.json
-        service: backend
-        cluster: investhome-cluster
-        wait-for-service-stability: true
