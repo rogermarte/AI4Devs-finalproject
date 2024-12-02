@@ -10,7 +10,6 @@ RUN npm ci
 COPY . .
 
 # Construir la aplicación
-ENV NEXT_PUBLIC_API_URL=http://investhome-alb-1088488104.eu-west-1.elb.amazonaws.com
 RUN npm run build
 
 # Imagen final

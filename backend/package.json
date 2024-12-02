@@ -1,9 +1,8 @@
 {
-  "name": "finalproject-rmt",
+  "name": "backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test": "jest",
     "dev": "ts-node-dev src/infrastructure/server.ts",
