@@ -29,6 +29,7 @@ COPY --from=builder /app/public ./public
 
 # Configurar la URL del backend usando el ALB
 ENV NEXT_PUBLIC_API_URL=http://investhome-alb-1088488104.eu-west-1.elb.amazonaws.com:4000
+ENV NEXT_PUBLIC_IS_AWS=true
 
 EXPOSE 3000
 
