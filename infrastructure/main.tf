@@ -172,10 +172,11 @@ resource "aws_ecs_task_definition" "backend" {
       environment = [
         {
           name  = "DATABASE_URL"
-          value = "postgresql://${var.db_username}:${var.db_password}@${aws_db_instance.main.endpoint}/investhome"        },
+          value = "postgresql://${var.db_username}:${var.db_password}@${aws_db_instance.main.endpoint}/investhome"
+        },
         {
           name  = "CORS_ORIGIN"
-          value = "http://${aws_lb.main.dns_name}"
+          value = "http://${aws_lb.main.dns_name}:3000"
         }
       ]
       portMappings = [
