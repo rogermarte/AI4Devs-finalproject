@@ -1,12 +1,22 @@
-import { InvestmentStatus } from './enums'
-import { Property } from './property'
-import { User } from './user'
-
 export interface Investment {
   id: string
+  propertyId: string
   amount: number
-  status: InvestmentStatus
-  property: Property
-  investor: User
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
   createdAt: string
+  property: {
+    title: string
+    price: number
+    squareMeters: number
+    psi: {
+      profile: {
+        name: string
+      }
+    }
+  }
+  investor: {
+    profile: {
+      name: string
+    }
+  }
 } 

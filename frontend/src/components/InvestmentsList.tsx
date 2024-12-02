@@ -1,24 +1,7 @@
 import { useState, useEffect } from 'react'
 import { config } from '@/config'
-import { InvestmentCard } from './InvestmentCard'
-
-interface Investment {
-  id: string
-  propertyId: string
-  amount: number
-  status: 'PENDING' | 'APPROVED' | 'REJECTED'
-  createdAt: string
-  property: {
-    title: string
-    price: number
-    squareMeters: number
-    psi: {
-      profile: {
-        name: string
-      }
-    }
-  }
-}
+import { InvestmentCard } from '@/components/InvestmentCard'
+import { Investment } from '@/types/investment'
 
 export function InvestmentsList() {
   const [investments, setInvestments] = useState<Investment[]>([])
